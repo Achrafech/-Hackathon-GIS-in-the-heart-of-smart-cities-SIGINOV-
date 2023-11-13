@@ -1,0 +1,2 @@
+X_end , Y_end :42378.3278 , 23745.327563
+Latitude START,Longitude START: 33.547821,-7.650536 

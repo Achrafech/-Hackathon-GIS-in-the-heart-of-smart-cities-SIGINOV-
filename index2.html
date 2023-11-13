@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Get Located</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css" />
+</head>
+<body>
+    <form style="position: absolute; top: 10px; right: 10px; z-index: 1000; margin: 30px;" method="post" action="/">
+        <input type="text" id="user_input" name="user_input" placeholder="Adresse : " />
+        <button type="submit">Soumettre</button>
+    </form>
+
+    <div id="map" style="width: 100%; height: 100vh"></div>
+
+    <script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js"></script>
+    <script>
+        var map = L.map("map").setView([51.505, -0.09], 13);
+        var marker;
+
+        L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+            maxZoom: 19,
+            attribution: "© OpenStreetMap contributors",
+        }).addTo(map);
+
+        function onLocationFound(e) {
+            var radius = e.accuracy / 2;
+            if (marker) {
+                map.removeLayer(marker);
+            }
+            marker = L.marker(e.latlng)
+                .addTo(map)
+                .bindPopup("You are within " + radius + " meters from this point")
+                .openPopup();
+            L.circle(e.latlng, radius).addTo(map);
+
+            // Enregistrez la localisation dans le fichier values.txt
+            var locationData = {
+                latitude: e.latlng.lat,
+                longitude: e.latlng.lng
+            };
+            fetch('/save_location', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(locationData),
+            });
+        }
+
+        function onLocationError(e) {
+            alert(e.message);
+        }
+
+        function refreshLocation() {
+            map.locate({ setView: true, maxZoom: 16 });
+        }
+
+        map.on("locationfound", onLocationFound);
+        map.on("locationerror", onLocationError);
+
+        refreshLocation();
+        setInterval(refreshLocation, 5000);
+
+        // Ajoutez cette fonction pour obtenir les coordonnées depuis le serveur Flask
+        function getCoordinates() {
+            fetch("/coordinates")
+                .then(response => response.json())
+                .then(coordinates => {
+                    // Ajoutez ici le code pour traiter les coordonnées et les afficher sur la carte
+                    console.log(coordinates);
+                })
+                .catch(error => console.error('Error fetching coordinates:', error));
+        }
+
+        // Appelez la fonction pour obtenir les coordonnées
+        getCoordinates();
+    </script>
+</body>
+</html>
