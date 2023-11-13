@@ -1,4 +1,4 @@
-# -Hackathon-GIS-in-the-heart-of-smart-cities-SIGINOV-Based on the content of your project report, here's a suggested README structure for your GitHub repository. This README is tailored to present your Smart Traffic Control Hub project effectively:
+# -Hackathon-GIS-in-the-heart-of-smart-cities-SIGINOV:
 
 ---
 
